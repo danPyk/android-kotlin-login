@@ -17,10 +17,10 @@
 package com.example.android.firebaseui_login_sample
 
 import android.app.Activity
+import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,12 +34,8 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 
 
+class MainFragment : androidx.fragment.app.Fragment() {
 
-class MainFragment : Fragment() {
-
-    object Const {
-var some : Int = 1
-    }
 
     companion object {
         const val TAG = "MainFragment"
@@ -67,6 +63,10 @@ var some : Int = 1
 
         binding.authButton.setOnClickListener {
             launchSignInFlow()
+        }
+        binding.settingsBtn.setOnClickListener {
+           // val action = MainFragmentDirections.actionMainFragmentToSettingsFragment()
+            findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
         }
     }
     //  Listen to the result of the sign in process by filter for when
@@ -99,7 +99,7 @@ var some : Int = 1
 
         //  Use the authenticationState variable from LoginViewModel to update the UI
         //  accordingly.
-        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+        viewModel.authenticationState.observe(viewLifecycleOwner, androidx.lifecycle.Observer { authenticationState ->
             when (authenticationState) {
                 //when user is AUTHENTICATED, do stuff
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
@@ -121,19 +121,20 @@ var some : Int = 1
                     //  3. Lastly, if there is no logged-in user, auth_button should display Login and
                     //  launch the sign in screen when clicked.
                     binding.authButton.text = getString(R.string.login_button_text)
+                    //  If there is no logged in user, authButton should display Login and launch the sign
+                    //  in screen when clicked. There should also be no personalization of the message
+                    //  displayed.
                     binding.authButton.setOnClickListener { launchSignInFlow() }
                     binding.welcomeText.text = factToDisplay
                 }
             }
         })
 
-        //  TODO If there is a logged-in user, authButton should display Logout. If the
+        //   If there is a logged-in user, authButton should display Logout. If the
         //   user is logged in, you can customize the welcome message by utilizing
         //   getFactWithPersonalition(). I
 
-        // TODO If there is no logged in user, authButton should display Login and launch the sign
-        //  in screen when clicked. There should also be no personalization of the message
-        //  displayed.
+
     }
 
     //getString and format it
@@ -146,11 +147,11 @@ var some : Int = 1
             )
         )
     }
-
+    // Give users the option to sign in / register with their email or Google account.
+    // If users choose to register with their email,
+    // they will need to create a password as well.
     private fun launchSignInFlow() {
-        // Give users the option to sign in / register with their email or Google account.
-        // If users choose to register with their email,
-        // they will need to create a password as well.
+
         val providers = arrayListOf(
             AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
 
